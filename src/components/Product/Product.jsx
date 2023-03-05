@@ -1,18 +1,27 @@
-import s from './index.module.css';
-import truck from './img/truck.svg';
-import quality from './img/quality.svg';
-import cn from 'classnames';
-import { ReactComponent as Save } from './img/save.svg';
-import { useContext, useEffect, useState } from 'react';
-import { api } from '../../utils/api';
-import { useLocation, useMatches, useNavigate, useParams } from 'react-router-dom';
-import { UserContext } from '../../context/userContext';
+import s from "./index.module.css";
+import truck from "./img/truck.svg";
+import quality from "./img/quality.svg";
+import cn from "classnames";
+import { ReactComponent as Save } from "./img/save.svg";
+import { useContext, useEffect, useState } from "react";
+import { api } from "../../utils/api";
+import {
+  useLocation,
+  useMatches,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { UserContext } from "../../context/userContext";
 
 export const Product = ({ id }) => {
   const [product, setProduct] = useState({});
   useEffect(() => {
     api.getProductById(id).then((data) => setProduct(data));
   }, [id]);
+
+  const [showEdit, setShowEdit] = useState(false);
+  const [newName, setNewName] = useState(product?.name ?? "");
+  const [price, setPrice] = useState(product?.price ?? 0);
 
   const navigate = useNavigate();
 
@@ -28,15 +37,14 @@ export const Product = ({ id }) => {
   const params = useParams();
   // const matches = useMatches();
 
-
   console.log({ navigate, location, params });
 
-  useEffect(()=>{
-    if (location.search.includes('budget=3000')) {
+  useEffect(() => {
+    if (location.search.includes("budget=3000")) {
       // navigate('/part1')
       // alert('you are really rich man');
     }
-  },[]);
+  }, []);
 
   // useEffect(()=>{
   //   if (params.productId) {
@@ -44,6 +52,16 @@ export const Product = ({ id }) => {
   //     // alert('you are really rich man');
   //   }
   // },[params.productId]);
+
+  console.log({ product, newName });
+
+  const handleEditProduct = async () => {
+    await api.editProductById(product._id, {
+      name: newName || product.name,
+      price: price || product.price,
+    });
+    setShowEdit(false);
+  };
 
   return (
     <>
@@ -55,6 +73,8 @@ export const Product = ({ id }) => {
           ))}
         </div>
         <div className={s.desc}>
+          <span className={s.price}>{product.name}</span>
+
           <span className={s.price}>{product.price}&nbsp;₽</span>
           {!!product.discount && (
             <span className={`${s.price} card__price_type_discount`}>
@@ -67,16 +87,26 @@ export const Product = ({ id }) => {
               <span className={s.num}>0</span>
               <button className={s.plus}>+</button>
             </div>
-            <button className={`btn btn_type_primary ${s.cart}`} onClick={() => navigate('/product/63ecf77059b98b038f77b65f')}>
+            <button
+              className={`btn btn_type_primary ${s.cart}`}
+              onClick={() => navigate("/product/63ecf77059b98b038f77b65f")}
+            >
               В корзину
             </button>
+            {/* <button
+              className={`btn btn_type_primary ${s.cart}`}
+              onClick={() => setShowEdit(true)}
+            >
+              Редактировать
+            </button> */}
+          
           </div>
           <button className={cn(s.favorite, { [s.favoriteActive]: isLiked })}>
             <Save />
-            <span>{isLiked ? 'В избранном' : 'В избранное'}</span>
+            <span>{isLiked ? "В избранном" : "В избранное"}</span>
           </button>
           <div className={s.delivery}>
-            <img src={truck} alt='truck' />
+            <img src={truck} alt="truck" />
             <div className={s.right}>
               <h3 className={s.name}>Доставка по всему Миру!</h3>
               <p className={s.text}>
@@ -85,7 +115,7 @@ export const Product = ({ id }) => {
             </div>
           </div>
           <div className={s.delivery}>
-            <img src={quality} alt='quality' />
+            <img src={quality} alt="quality" />
             <div className={s.right}>
               <h3 className={s.name}>Доставка по всему Миру!</h3>
               <p className={s.text}>
@@ -97,6 +127,25 @@ export const Product = ({ id }) => {
       </div>
 
       <div className={s.box}>
+        {showEdit && (
+          <div>
+            <div className={s.edit}>
+              <input
+                type="text"
+                placeholder="Change Product Name"
+                onChange={(e) => setNewName(e.target.value)}
+                defaultValue={newName}
+              />
+              <input
+                type="number"
+                placeholder="Change Price"
+                onChange={(e) => setPrice(e.target.value)}
+                defaultValue={product.price}
+              />
+            </div>
+          </div>
+        )}
+   
         <h2 className={s.title}>Описание</h2>
         <div>{product.description}</div>
         <h2 className={s.title}>Характеристики</h2>

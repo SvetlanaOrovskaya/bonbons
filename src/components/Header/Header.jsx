@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Logo } from '../Logo/Logo';
 import { Search } from '../Search/Search';
 import './style.css';
+import Button from '@mui/material/Button'
 
 import IconBasket from './basketMaterial/BasketMaterial';
 import { UserContext } from '../../context/userContext';
@@ -26,6 +27,13 @@ export const Header = () => {
         <div className='header__wrapper'>
           <div className='header__left'>
             <Logo />
+           <div>
+            <Button 
+            variant="contained"
+            size="large"
+           onClick={() => {console.log("есть контакт")}}
+            >Контакт</Button>
+            </div>
             <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           </div>
           <div>

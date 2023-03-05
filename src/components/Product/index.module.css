@@ -211,3 +211,9 @@
 		padding: 14px 20px;
 	}
 }
+.edit {
+	display: flex;
+	flex-direction: column;
+	max-width: 300px;
+	gap: 16px;
+}

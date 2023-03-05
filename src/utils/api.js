@@ -16,16 +16,34 @@ class Api {
     this._baseUrl = data.baseUrl;
     this._headers = data.headers;
   }
-  getProductList(page = 2) {
-    return fetch(`${this._baseUrl}/products?page=${page}`, {
-      headers: this._headers,
-    }).then((res) => onResponse(res));
+  getProductList(page = 1, limit = null) {
+    if (page === null) {
+      let url = `${this._baseUrl}/products`;
+      
+      if (limit !== null) {
+        url = url + `?limit=${limit}`;
+      }
+
+      return fetch(url, {
+        headers: this._headers,
+      }).then((res) => onResponse(res));
+    } else {
+      let url = `${this._baseUrl}/products?page=${page}`;
+      
+      if (limit !== null) {
+        url = url + `&limit=${limit}`;
+      }
+
+      return fetch(url, {
+        headers: this._headers,
+      }).then((res) => onResponse(res));
+    }
   }
 
   // getProductList(page) {
   //   return fetch(`${this._baseUrl}/products`, {
   //     headers: this._headers,
-    //   }).then((res) => onResponse(res));
+  //     }).then((res) => onResponse(res));
   // }
 
 
@@ -33,6 +51,13 @@ class Api {
   getProductById(id) {
     return fetch(`${this._baseUrl}/products/${id}`, {
       headers: this._headers,
+    }).then((res) => onResponse(res));
+  }
+  editProductById(id, data) {
+    return fetch(`${this._baseUrl}/products/${id}`, {
+      headers: this._headers,
+      method: 'PATCH',
+      body: JSON.stringify(data),
     }).then((res) => onResponse(res));
   }
   addProduct(data) {
@@ -59,6 +84,12 @@ class Api {
       method: like ? 'PUT' : 'DELETE',
     }).then((res) => onResponse(res));
   }
+  deleteProduct(productId) {
+    return fetch(`${this._baseUrl}/products/${productId}`, {
+      headers: this._headers,
+      method: 'DELETE',
+    }).then((res) => onResponse(res));
+  }
   deleteLike(productId) {
     return fetch(`${this._baseUrl}/products/likes/${productId}`, {
       headers: this._headers,
@@ -75,7 +106,7 @@ class Api {
 
 export const api = new Api(config);
 
-// api.getProductList();
+api.getProductList();
 
 export const getProductList = () => {
   return fetch(`${config.baseUrl}/products`, {
@@ -95,9 +126,9 @@ export const searchProducts = (query) => {
   }).then((res) => onResponse(res));
 };
 
-// export const funct = () => {
-//  return fetch().then(onResponse)
-// }
+export const funct = () => {
+ return fetch().then(onResponse)
+}
 
 export const getProductById = (id) => {
   return fetch(`${config.baseUrl}/products/${id}`, {
